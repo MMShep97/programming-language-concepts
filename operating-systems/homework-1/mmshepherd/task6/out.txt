@@ -1,3 +1,0 @@
-destination
-script.sh
-source

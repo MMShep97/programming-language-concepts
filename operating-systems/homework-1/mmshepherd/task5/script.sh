@@ -1,3 +1,4 @@
+#!/bin/sh
 # Takes in: {source directory} and {destination directory}
 # Copy all exe files to dest. from source
 # Suggested: use find (-perm -u+x) w/ xargs/loop

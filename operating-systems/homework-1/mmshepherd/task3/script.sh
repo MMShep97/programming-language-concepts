@@ -1,4 +1,4 @@
-
+#!/bin/sh
 # Takes in: directory
 # Outputs 2 numbers delimited by space
 # First --> Num of files in directory (and sub)
