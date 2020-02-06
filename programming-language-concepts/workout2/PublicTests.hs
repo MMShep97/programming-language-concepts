@@ -20,7 +20,6 @@ main =
   where
     tests = 
       [
-{-
         test (p1 [1,2,3,4,5,6]) [2,4,6] ,
         test (p2 [1,2,3,4,5,6]) [1,3,5],
         test (p3 "abc") "aabbcc",
@@ -44,6 +43,5 @@ main =
               (JArray [ JObject [ ("val" , JNumber 3) ] , JObject [ ("nested" , JObject [ ("val" , JArray [ JBool True , JBool False])])],
                         JNull, JBool True]))
              [ JNumber 3 , JArray [ JBool True , JBool False ]]
--}
       ]
       
