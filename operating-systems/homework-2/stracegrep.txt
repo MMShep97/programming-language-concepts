@@ -1,0 +1,11 @@
+strace
+/tmp/aaa
+stdout
+stderr
+677265700068656c
+
+1
+1
+11
+1
+0
