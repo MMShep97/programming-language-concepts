@@ -176,6 +176,34 @@ void free_command(command cmd){
   free(cmd.extra_environment);
 }
 
+void process_command(command cmd) {
+  char * ls_args[3] = { ".", "ls", "-l", NULL};
+  int status;
+  pid_t pid = fork();
+
+  // if (pid < 0) {
+  //   perror("fork() error");
+  //   exit(1);
+  // }
+
+  if ( pid == 0 ) {
+    printf("New child process started %d\n", (int) getpid());
+    fflush(stdout);
+    execvp( ls_args[0], ls_args);
+  } 
+
+  else {
+
+    waitpid(pid, &status, 0);
+    kill(pid, SIGTERM);
+  
+    if ( WIFEXITED(status) ) {
+      int exit_status = WEXITSTATUS(status);
+      printf("Child process %d terminated with exit code 0x%.2X (%d)\n", pid, WEXITSTATUS(status), WEXITSTATUS(status));
+    }
+  }
+}
+
 
 int main(int argc, char *argv[], char* env[]) {
 
@@ -188,9 +216,9 @@ int main(int argc, char *argv[], char* env[]) {
     }
 
     //may be useful for debugging
-    //print_parsed_command(parsed_command);
+    // print_parsed_command(parsed_command);
 
-    //process_command(...);
+    process_command(parsed_command);
     /*
     process_command will:
     - get a parsed_command variable
