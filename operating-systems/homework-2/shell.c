@@ -176,7 +176,7 @@ void free_command(command cmd){
 }
 
 void process_command(command cmd) {
-  // char * ls_args[3] = { ".", "ls", "-l", NULL};
+  char * ls_args[] = { "./printargs", NULL};
   int status;
   pid_t pid = fork();
 
@@ -185,11 +185,17 @@ void process_command(command cmd) {
   //   exit(1);
   // }
 
-  if ( pid == 0 ) {
+  if ( pid < 0) {
+    printf("Could not create child...");
+  }
+
+  else if ( pid == 0 ) {
     printf("New child process started %d\n", (int) getpid());
     fflush(stdout);
-    // execvp( ls_args[0], ls_args);
-    exit(0);
+    execvp( ls_args[0], ls_args);
+    //nothing else can be run after execvp because it starts a new child process (i.e.) the 
+    //current child process it is in, this conditional, is terminated now
+    // exit(0); -- can use for debugging purposes (if execvp not being used)
   } 
 
   else {
