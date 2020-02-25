@@ -8,7 +8,6 @@
 #include <sys/types.h>
 #include <fcntl.h>
 
-
 typedef struct {
   char* binary_path;
   char* stdin;
@@ -177,7 +176,7 @@ void free_command(command cmd){
 }
 
 void process_command(command cmd) {
-  char * ls_args[3] = { ".", "ls", "-l", NULL};
+  // char * ls_args[3] = { ".", "ls", "-l", NULL};
   int status;
   pid_t pid = fork();
 
@@ -189,13 +188,13 @@ void process_command(command cmd) {
   if ( pid == 0 ) {
     printf("New child process started %d\n", (int) getpid());
     fflush(stdout);
-    execvp( ls_args[0], ls_args);
+    // execvp( ls_args[0], ls_args);
+    exit(0);
   } 
 
   else {
 
     waitpid(pid, &status, 0);
-    kill(pid, SIGTERM);
   
     if ( WIFEXITED(status) ) {
       int exit_status = WEXITSTATUS(status);
