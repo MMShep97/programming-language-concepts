@@ -4,11 +4,20 @@ module Exercises where
    p1 (Just True) (Just True) would be Just True, for
    the example where the applicative f is Maybe. -}
 a1 :: Applicative f => f Bool -> f Bool -> f Bool
-a1 = undefined
+a1 a b = pure (&&) <*> a <*> b
 
 {- process each action in the given list, but if you encounter one which return False, skip the next action. -}
 a2 :: Monad f => [f Bool] -> f ()
-a2 = undefined
+a2 [] = return ()
+a2 (a:xs) = do
+  a_e <- a
+  if a_e then
+    do
+      return a_e
+      a2 xs
+  else
+   a2 (drop 1 xs)
+
 
 s1 :: Monad f => f Bool -> f a -> f a -> f a
 s1 x a1 a2 =
@@ -67,7 +76,18 @@ sum3 :: Int -> Int -> Int -> StackProg
 sum3 = undefined
 
 evalh :: StackProg -> St ()
-evalh = undefined
+evalh (Push x)= pushValue x
+evalh (Pop) = fmap (const ()) popValue
+evalh (BinOp f) = do
+  x <- popValue
+  y <- popValue
+  pushValue (f x y)
+evalh (Flip) = do
+  x <- popValue
+  y <- popValue
+  pushValue x
+  pushValue y
+evalh (p1 :- p2) = evalh p1 >> evalh p2
 
 eval :: StackProg -> [Int]
 eval = fst . ($ []) . openSt . evalh
