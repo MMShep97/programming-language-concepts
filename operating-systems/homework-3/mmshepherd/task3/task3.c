@@ -7,20 +7,18 @@
 #include <sys/stat.h>
 
 //reverse content of file and be savved into the file path
-
-typedef unsigned char byte;
-
 int main (int argc, char *argv[], char *env[]) {
 
-    struct stat skrrt;
+    struct stat stat_buffer;
     char *file_path = argv[1];
 
     int file_descriptor = open(file_path, O_RDWR);
-    fstat(file_descriptor, &skrrt);
-    off_t file_size = skrrt.st_size;
+    // obtain info about the open file --> writes it to area pointed to by the buffer
+    fstat(file_descriptor, &stat_buffer);
+    off_t file_size = stat_buffer.st_size;
 
     // map file into mem
-    byte *peon = mmap(0, file_size, PROT_WRITE|PROT_READ, MAP_SHARED, file_descriptor, 0);
+    unsigned char *peon = mmap(0, file_size, PROT_WRITE|PROT_READ, MAP_SHARED, file_descriptor, 0);
 
     // skkkkr errror
     if( (long)peon == -1){
@@ -32,13 +30,15 @@ int main (int argc, char *argv[], char *env[]) {
     int length = count / 2;
 
     for ( int i = 0; i < length; i++) {
-        char c = *(peon + i);
-        *(peon + i) = *(peon + count - 1);
-        *(peon + count - 1) = c;
+        char c = *(i + peon);
+        *(i + peon) = *(count + peon - 1);
+        *(count + peon - 1) = c;
         count--;
     }
 
-    msync(peon, file_size, MS_SYNC);
+    // flush changes made to copy of file mapped by mmap
+    msync(peon, file_size, MS_SYNC); // MS_SYNC --> requests update and waits for completion
+    // close file based on descriptor
     close(file_descriptor);
     // unmap
     munmap(peon, file_size);

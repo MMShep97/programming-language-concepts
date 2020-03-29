@@ -3,26 +3,31 @@
 #include <stdlib.h>
 #include <stdio.h>
 
+// Take assembly code as arg 
+//  --> allocate executable mem region
+//  --> hex-decode arg & copy hex-decoded content into executable mem region
+//  --> Start executing copied code
+
 typedef unsigned char byte;
 
 int main (int argc, char *argv[], char *env[]) {
     int accolation_size = 500000;
-    
-    
+
     char assembly_code[accolation_size];
-    strcpy(assembly_code,argv[1]);
+    strcpy(assembly_code, argv[1]);
+
     unsigned char assembly_deconstructed[accolation_size];
     unsigned char lil_boyo;
-    char temp[2];
+    char part_timer[2];
     int count = 0;
     
     int length = (int) strlen(assembly_code);
 
     for (int i = 0; i < length; i = i + 2) {
-        temp[0] = assembly_code[i];
-        temp[1] = assembly_code[i + 1];
+        part_timer[0] = assembly_code[i];
+        part_timer[1] = assembly_code[i + 1];
         // suggested (sscanf)
-        sscanf(temp, "%02hhx", &lil_boyo);
+        sscanf(part_timer, "%02hhx", &lil_boyo); //hex-decoding boiii
         assembly_deconstructed[count] = lil_boyo;
         count++;
     }
