@@ -32,6 +32,7 @@ int compare( const void* a, const void* b)
 
 int main(int argc, char *argv[], char* env[]) {
 
+    int * shared_memory_array[1000];
     char *p;
     char * file_path = argv[1];
     long num_children = strtol(argv[2], &p, 10);
@@ -142,96 +143,154 @@ int main(int argc, char *argv[], char* env[]) {
         // printf("new line\n");
     }
 
-    printf("\nFiltered List: \n");
+    // printf("\nFiltered List: \n");
 
     for (int i = 0; i < lines_total; i++) {
         // printf("%s ", filtered_list[i]);
-        printf("%d ", kv[i].filtered_num);
+        kv[i].sorted_indice = i;
+        // printf("%d ", kv[i].filtered_num);
     }
 
-    printf("\nLines List: \n");
+    // printf("\nLines List: \n");
 
     for (int i = 0; i < lines_total; i++) {
-        printf("%s \n", kv[i].output_pair);
+        // printf("%s \n", kv[i].output_pair);
         // printf("%s \n", line_list[i]);
     }    
 
-    printf("\n");
+    // printf("\n");
 
     // printf("\nSplit\n");
 
 // ------------- Split filtered lines into different parts for child processes ----------------
 // https://stackoverflow.com/questions/36526259/split-c-array-into-n-equal-parts
 
-int chunk_size = lines_total / num_children;
-int child_number = 0;
-for (int i = 0; i < num_children; i++) {
-    int start = i * chunk_size;
-    int end = start + chunk_size - 1;
-    if (i == num_children - 1) {
-        end = lines_total - 1;
-    }
+// int chunk_size = lines_total / num_children;
+// int child_number = 0;
+// for (int i = 0; i < num_children; i++) {
+//     int start = i * chunk_size;
+//     int end = start + chunk_size - 1;
+//     if (i == num_children - 1) {
+//         end = lines_total - 1;
+//     }
 
-    for (int i = start; i <= end; i++) {
-        // printf("filter: %d ", kv[i].filtered_num);
-        kv[i].child_num = child_number;
-    }
-        child_number++;
+//     for (int i = start; i <= end; i++) {
+//         // printf("filter: %d ", kv[i].filtered_num);
+//         kv[i].child_num = child_number;
+//     }
+//         child_number++;
 
-        // printf("\n");
-}
+//         // printf("\n");
+// }
 
+// sorting
+   for (int j = 0; j < lines_total; ++j)
+   {
+      for (int k = j + 1; k < lines_total; ++k)
+      {
+         if (kv[j].filtered_num > kv[k].filtered_num)
+         {
+            int temp = kv[j].filtered_num;
+            int temp_indice = kv[j].sorted_indice;
+            kv[j].filtered_num = kv[k].filtered_num;
+            kv[j].sorted_indice = kv[k].sorted_indice;
+            kv[k].filtered_num = temp;
+            kv[k].sorted_indice = temp_indice;
+         }
+      }
+   }
+//    printf("Numbers in ascending order:\n");
+//    for (int i = 0; i < lines_total; ++i)
+    //   printf("%d\n", kv[i].filtered_num);
+
+        //  printf("Output in ascending order:\n");
+   for (int i = 0; i < lines_total; ++i)
+      printf("%s\n", kv[kv[i].sorted_indice].output_pair);
 
 
 // --------------------------------------------------------------------------------
 // -------------------------- Child Processes -------------------------------------
 // --------------------------------------------------------------------------------
-    for(int i=0;i<num_children;i++) // loop will run n times 
-    { 
-        int filter_list[1000];
-        int temp_count = 0;
-        int current_child_num = i;
-        // gets portion of list into correct child processes
-        for (int j = 0; j < lines_total; j++) {
-            if (kv[j].child_num == current_child_num) {
-                filter_list[temp_count] = kv[j].filtered_num;
-                kv[j].sorted_indice = temp_count;
-                temp_count++;
-            }
-        }
+    // int running_indice_total = 0;
+    // for(int i=0;i<num_children;i++) // loop will run n times 
+    // { 
+    //     int filter_list[1000];
+    //     int temp_count = 0;
+    //     int current_child_num = i;
+    //     // gets portion of list into correct child processes
+    //     for (int j = 0; j < lines_total; j++) {
+    //         if (kv[j].child_num == current_child_num) {
+    //             filter_list[temp_count] = kv[j].filtered_num;
+    //             temp_count++;
+    //         }
+            
+    //     }
+
+    //     running_indice_total += temp_count;
+
+        
+
+        // printf("Sorted Indice: \n" );
+        // for (int n = 0; n < lines_total; n++) {
+        //     printf("%d %s\n", kv[n].sorted_indice, kv[n].output_pair);
+        // }
+        // printf("\n");
+
         // child process creation
         if(fork() == 0) 
         {
-            printf("FILTER LIST @ CHILD %d: ", current_child_num);
-            for (int c = 0; c < temp_count; c++) {
-                printf("%d ", filter_list[c]);
-            }
+            // printf("Filter List @ Child %d: ", current_child_num);
+            // for (int c = 0; c < temp_count; c++) {
+            //     printf("%d ", filter_list[c]);
+            // }
 
-printf("\n");
-            printf("INDICE\n");
+// printf("\n");
+            // printf("TEMP COUNT: %d\n", temp_count);
+            // printf("running total COUNT: %d\n", running_indice_total);
 
-            for (int b = 0; b < lines_total; b++) {
-                printf("%d ", kv[b].sorted_indice);
-            }
+
+
+            // int filter_list_copy[1000];
+            // for (int u = 0; u < temp_count; u++) {
+            //     filter_list_copy[u] = filter_list[u];
+            // }
 
             // https://stackoverflow.com/questions/3893937/sorting-an-array-in-c
-            qsort(filter_list, temp_count, sizeof(int), compare );
+            // qsort(filter_list, temp_count, sizeof(int), compare );
 
-            printf("FILTER LIST --SORTED-- @ CHILD %d: ", current_child_num);
-            for (int c = 0; c < temp_count; c++) {
-                printf("%d ", filter_list[c]);
-            }
+            // printf("Filter List --SORTED-- @ child %d: ", current_child_num);
+            // for (int c = 0; c < temp_count; c++) {
+            //     printf("%d ", filter_list[c]);
+            // }
+
+            //put indice in key value struct so we can pipe
+            // for (int d = 0; d < temp_count; d++) {
+            //     for (int f = 0; f < temp_count; f++) {
+            //         if (filter_list_copy[f] == filter_list[d]) {
+            //             kv[f].sorted_indice = d;
+            //             break;
+            //         }
+            //     }
+            // }
+
+            // printf("Testing Output Pair: \n");
+            // for (int p = 0; p < lines_total; p++) {
+            //     if (kv[p].sorted_indice != -1) {
+            //         printf("%s\n", kv[p].output_pair);
+            //     }
+            // }
 
 
 
-            printf("\n");
-            printf("[son] pid %d from [parent] pid %d\n",getpid(),getppid()); 
+            // printf("\n");
+            // printf("[son] pid %d from [parent] pid %d\n",getpid(),getppid()); 
             exit(0); 
-        } 
     } 
     for(int i=0;i<num_children;i++) {// loop will run n times 
         wait(NULL); 
     }
+
+    // qsort(filter_list, temp_count, sizeof(int), compare );
 
     return 0;
 }
