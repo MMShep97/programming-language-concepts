@@ -1,0 +1,12 @@
+-------------------------------
+yes1.tp
+Unit
+-------------------------------
+yes2.tp
+Unit
+-------------------------------
+yes3.tp
+Arrow Unit (Arrow Unit Unit)
+-------------------------------
+yes4.tp
+Arrow (Arrow Unit Unit) (Arrow Unit Unit)
